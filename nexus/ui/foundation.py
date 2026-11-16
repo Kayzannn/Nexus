@@ -1,10 +1,10 @@
 """Janela estável das Fases 1/2; módulos posteriores são opt-in."""
 from pathlib import Path
 from typing import Callable, Any
-from PySide6.QtCore import Qt, Slot, QThreadPool, QTimer, QPropertyAnimation
+from PySide6.QtCore import Qt, Slot, QThreadPool, QTimer
 from PySide6.QtWidgets import (QApplication, QCheckBox, QFileDialog, QHBoxLayout, QLabel,
     QLineEdit, QMainWindow, QMessageBox, QPushButton, QProgressBar, QScrollArea,
-    QStackedWidget, QVBoxLayout, QWidget, QGraphicsOpacityEffect)
+    QStackedWidget, QVBoxLayout, QWidget)
 from nexus.core.database import Database
 from nexus.core.logger import close_logger, get_logger, log_error
 from nexus.core.settings import Settings
@@ -14,6 +14,7 @@ from nexus.modules.file_manager.ui import FileManagerMixin
 from nexus.ui.models import RecordView, prepare_rows
 from nexus.ui.sidebar import Sidebar
 from nexus.ui.themes import apply_theme
+from nexus.ui.navigation import scroll_page, switch_page
 
 COLUMNS = {
     'scan': ['path', 'name', 'extension', 'size', 'created', 'modified', 'captured'],
@@ -72,15 +73,7 @@ class Window(FileManagerMixin, QMainWindow):
         self.refresh()
 
     def navigate(self, index: int):
-        self.stack.setCurrentIndex(index)
-        page = self.stack.currentWidget()
-        effect = QGraphicsOpacityEffect(page)
-        page.setGraphicsEffect(effect)
-        self.fade = QPropertyAnimation(effect, b'opacity', self)
-        self.fade.setDuration(150)
-        self.fade.setStartValue(.7)
-        self.fade.setEndValue(1.0)
-        self.fade.start()
+        switch_page(self.stack, index)
 
     def page(self, title: str):
         page = QWidget()
@@ -88,10 +81,7 @@ class Window(FileManagerMixin, QMainWindow):
         label = QLabel(title)
         label.setStyleSheet('font-size: 22px; font-weight: 600; padding: 8px;')
         layout.addWidget(label)
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setWidget(page)
-        self.stack.addWidget(scroll)
+        self.stack.addWidget(scroll_page(page))
         return layout
 
     def button(self, layout, text: str, callback: Callable):

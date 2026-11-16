@@ -6,14 +6,14 @@ from datetime import datetime
 from pathlib import Path
 from html import escape
 from PySide6.QtCore import (Qt, QTimer, QSettings, QProcess, QDate, Slot, QObject,
-                            Signal, QRunnable, QPropertyAnimation)
+                            Signal, QRunnable)
 from PySide6.QtGui import QPixmap, QTextDocument
 from PySide6.QtPrintSupport import QPrinter
 from PySide6.QtWidgets import (QApplication, QWidget, QHBoxLayout, QVBoxLayout, QLabel,
     QListWidget, QStackedWidget, QPushButton, QLineEdit, QComboBox, QCheckBox, QSpinBox,
     QDoubleSpinBox, QDateEdit, QCalendarWidget, QTableWidget, QTableWidgetItem,
     QAbstractItemView, QMessageBox, QFileDialog, QFormLayout, QDialog, QDialogButtonBox,
-    QPlainTextEdit, QProgressBar, QGraphicsOpacityEffect, QScrollArea, QTabWidget)
+    QPlainTextEdit, QProgressBar, QScrollArea, QTabWidget)
 from nexus.ui.base import Window as BaseWindow
 from nexus.core.workers import Task
 from nexus.core.settings import Settings
@@ -21,6 +21,7 @@ from nexus.core.logger import log_error, close_logger
 from nexus.ui.sidebar import Sidebar
 from nexus.ui.dashboard import DashboardMixin
 from nexus.ui.themes import apply_theme
+from nexus.ui.navigation import scroll_page, switch_page
 from nexus.services.workspace import Workspace
 from nexus.services.manager import FileManager, scan, filter_rows, rename_plan, category_plan
 from nexus.services.files import execute_copy
@@ -61,10 +62,7 @@ class Window(DashboardMixin, BaseWindow):
         pages = [old_tabs.widget(old_tabs.count()-1)] + [old_tabs.widget(i) for i in range(old_tabs.count()-1)]
         for title, page in zip(titles, pages):
             self.navigation.addItem(title)
-            scroll = QScrollArea()
-            scroll.setWidgetResizable(True)
-            scroll.setWidget(page)
-            self.stack.addWidget(scroll)
+            self.stack.addWidget(scroll_page(page))
         shell = QWidget()
         root = QHBoxLayout(shell)
         side = QVBoxLayout()
@@ -93,14 +91,7 @@ class Window(DashboardMixin, BaseWindow):
         self.timer_dashboard.start(60000)
 
     def navigate(self, index):
-        self.stack.setCurrentIndex(index)
-        effect = QGraphicsOpacityEffect(self.stack.currentWidget())
-        self.stack.currentWidget().setGraphicsEffect(effect)
-        self.fade = QPropertyAnimation(effect, b'opacity', self)
-        self.fade.setDuration(150)
-        self.fade.setStartValue(.65)
-        self.fade.setEndValue(1)
-        self.fade.start()
+        switch_page(self.stack, index)
         self.refresh_dashboard()
 
     def toggle_theme(self):

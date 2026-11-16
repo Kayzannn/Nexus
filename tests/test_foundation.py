@@ -175,3 +175,26 @@ def test_confirmed_rename_and_undo_through_ui(window, tmp_path):
     assert original.read_text() == 'conteúdo importante'
     assert not target.exists()
     assert window.db.rows('SELECT status FROM file_operations')[0]['status'] == 'undone'
+
+
+@pytest.mark.parametrize('dark', [True, False])
+def test_navigation_repaints_opaque_pages_without_ghosting(window, app, dark):
+    from PySide6.QtCore import Qt
+    from nexus.ui.themes import apply_theme
+    window.dark = dark
+    apply_theme(dark)
+    window.navigation.setCurrentRow(1)
+    app.processEvents()
+    reference = window.stack.grab().toImage()
+    for index in [2, 0, 1] * 4:
+        window.navigation.setCurrentRow(index)
+        app.processEvents()
+        for page_index in range(window.stack.count()):
+            page = window.stack.widget(page_index)
+            assert page.graphicsEffect() is None
+            assert page.isVisible() == (page_index == index)
+            assert page.widget().testAttribute(Qt.WidgetAttribute.WA_StyledBackground)
+            assert page.viewport().testAttribute(Qt.WidgetAttribute.WA_StyledBackground)
+        assert window.stack.grab().toImage().pixelColor(0, 0).alpha() == 255
+    result = window.stack.grab().toImage()
+    assert result == reference, 'Trocar páginas não deve deixar pixels das telas anteriores'

@@ -16,6 +16,8 @@ def apply_theme(dark=True):
     app.setStyleSheet(f'''
         QWidget {{ font-family: 'Segoe UI', sans-serif; font-size: 13px; }}
         QMainWindow, QScrollArea {{ background: {bg}; }}
+        QWidget#modulePage, QWidget#moduleViewport {{ background: {bg}; color: {text}; }}
+        QScrollArea#moduleScroll {{ border: 0; background: {bg}; }}
         QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox, QDateEdit, QPlainTextEdit {{
             background: {panel}; color: {text}; border: 1px solid {border}; border-radius: 5px; padding: 6px; }}
         QPushButton {{ background: {panel}; color: {text}; border: 1px solid {border}; border-radius: 5px; padding: 7px 12px; }}

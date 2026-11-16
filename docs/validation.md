@@ -53,3 +53,8 @@ O teste verifica contagem integral e processamento de eventos, não apenas um re
 - Revisar as fases experimentais uma por vez, com arquivos RAW e fluxos reais, antes de promovê-las.
 
 Nenhum executável Windows foi gerado nesta sessão. O build foi validado apenas como comando e contrato de execução.
+
+
+## Correção de sobreposição visual
+
+A transparência aplicada à página inteira foi removida das janelas padrão e experimental. O conteúdo e o viewport de cada página têm fundo opaco conforme o tema. Um teste de regressão alterna repetidamente entre Início, Arquivos e Configurações nos dois temas, verifica que apenas a página atual está visível e compara a imagem renderizada antes/depois das trocas. A suíte após essa correção passou com **43 testes** em Linux/Qt offscreen. O comportamento nativo do Windows ainda requer confirmação no computador afetado.

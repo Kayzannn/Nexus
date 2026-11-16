@@ -28,7 +28,7 @@ Qt precisa das bibliotecas gráficas da distribuição. Testes headless são con
 
 ## Fase 1: fundação implementada
 
-- Janela principal com barra lateral e páginas roláveis, tema escuro inicial, opção clara persistida e transições discretas.
+- Janela principal com barra lateral e páginas roláveis, tema escuro inicial, opção clara persistida e páginas opacas para evitar sobreposição de conteúdo.
 - Inicialização automática do SQLite e migrações transacionais até a versão 3, preservando dados existentes e rejeitando bancos de versões futuras.
 - Configurações no SQLite, logs locais rotativos e tabela de erros com contexto e traceback.
 - Workers sem acesso a widgets; sinais enfileirados atualizam a interface na thread principal.
