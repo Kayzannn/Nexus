@@ -1,0 +1,2 @@
+# A fonte única das dependências é pyproject.toml.
+-e .

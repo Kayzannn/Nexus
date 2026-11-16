@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexus-personal-hub"
+version = "0.1.0"
+description = "Personal Automation Hub"
+requires-python = ">=3.12"
+dependencies = ["PySide6>=6.10,<7", "Pillow>=12,<13", "ExifRead>=3.5,<4"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<10"]
+experimental = ["rawpy>=0.25,<0.27", "pyqtgraph>=0.14,<0.15"]
+build = ["pyinstaller>=6.17,<7"]
+
+[project.gui-scripts]
+nexus = "nexus.app:main"
+
+[tool.setuptools.packages.find]
+include = ["nexus*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+junit_family = "legacy"
+markers = ["experimental: integração das fases posteriores (extras opcionais)", "performance: validação com milhares de registros"]
